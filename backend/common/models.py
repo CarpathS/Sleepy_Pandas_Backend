@@ -11,11 +11,11 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    name = Column(String, nullable=True)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=True)
     gender = Column(Integer, nullable=True)
-    work = Column(String, nullable=True)
+    work = Column(String(255), nullable=True)
     work_id = Column(Integer, nullable=True)
     date_of_birth = Column(Date, nullable=True)
     age = Column(Integer, nullable=True)
@@ -25,7 +25,7 @@ class User(Base):
     lower_pressure = Column(Integer, nullable=True)
     daily_steps = Column(Integer, nullable=True)
     heart_rate = Column(Integer, nullable=True)
-    reset_token = Column(String, nullable=True)
+    reset_token = Column(String(255), nullable=True)
 
     sleep_records = relationship("SleepRecord", back_populates="user", cascade="all, delete-orphan")
     weekly_records = relationship("WeeklyPrediction", back_populates="user", cascade="all, delete-orphan")
@@ -35,7 +35,7 @@ class SleepRecord(Base):
     __tablename__ = "sleep_records"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, ForeignKey("users.email"), nullable=False)
+    email = Column(String(255), ForeignKey("users.email"), nullable=False)
     sleep_time = Column(DateTime, nullable=False)
     wake_time = Column(DateTime, nullable=False)
     duration = Column(Float, nullable=False)
@@ -47,7 +47,7 @@ class Work(Base):
     __tablename__ = "work_data"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, ForeignKey("users.email"), nullable=False)
+    email = Column(String(255), ForeignKey("users.email"), nullable=False)
     work_id = Column(Integer, nullable=True)
     quality_of_sleep = Column(Float, nullable=True)
     physical_activity_level = Column(Float, nullable=True)
@@ -83,14 +83,14 @@ class MonthlyPrediction(Base):
     __tablename__ = "monthly_predictions"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, nullable=False)
-    prediction_result = Column(String, nullable=False)
+    email = Column(String(255), nullable=False)
+    prediction_result = Column(String(64), nullable=False)
 
 
 class Feedback(Base):
     __tablename__ = "feedback"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, index=True, nullable=False)
-    feedback = Column(String, nullable=False)
+    email = Column(String(255), index=True, nullable=False)
+    feedback = Column(String(1024), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)

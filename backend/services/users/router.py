@@ -30,6 +30,12 @@ class ProfileUpdatePayload(BaseModel):
     gender: Optional[int] = None
     work: Optional[str] = None
     date_of_birth: Optional[date] = None
+    weight: Optional[float] = None
+    height: Optional[float] = None
+    upper_pressure: Optional[int] = None
+    lower_pressure: Optional[int] = None
+    daily_steps: Optional[int] = None
+    heart_rate: Optional[int] = None
 
 
 class MetricsUpdatePayload(BaseModel):
@@ -127,6 +133,7 @@ def update_profile(email: str, payload: ProfileUpdatePayload, db: Session = Depe
 
 
 @router.patch("/{email}/metrics", response_model=UserResponse)
+@router.put("/{email}/metrics", response_model=UserResponse)
 def update_metrics(email: str, payload: MetricsUpdatePayload, db: Session = Depends(get_db)):
     user = _ensure_user(db, email)
     for field, value in payload.dict(exclude_none=True).items():

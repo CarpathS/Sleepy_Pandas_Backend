@@ -6,6 +6,7 @@ from typing import Dict
 
 import joblib
 import numpy as np
+import xgboost as xgb
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
@@ -30,6 +31,7 @@ def _ensure_artifact(path: Path) -> Path:
 
 
 model = joblib.load(_ensure_artifact(MODEL_PATH))
+booster = model.get_booster()
 scaler = joblib.load(_ensure_artifact(SCALER_PATH))
 
 PREDICTION_MAPPING: Dict[int, str] = {
@@ -37,6 +39,21 @@ PREDICTION_MAPPING: Dict[int, str] = {
     1: "Normal",
     2: "Sleep Apnea",
 }
+
+FEATURE_NAMES = [
+    "Gender",
+    "Age",
+    "Occupation",
+    "Sleep Duration",
+    "Quality of Sleep",
+    "Physical Activity Level",
+    "Stress Level",
+    "BMI Category",
+    "Heart Rate",
+    "Daily Steps",
+    "SYSTOLIC",
+    "DIASTOLIC",
+]
 
 
 class PredictionRequest(BaseModel):
@@ -131,7 +148,13 @@ def run_prediction(payload: PredictionRequest, db: Session = Depends(get_db)):
         ]
     ).reshape(1, -1)
 
-    prediction_value = int(model.predict(features)[0])
+    dmatrix = xgb.DMatrix(features, feature_names=FEATURE_NAMES)
+    raw_prediction = booster.predict(dmatrix)
+
+    if raw_prediction.ndim == 1:
+        prediction_value = int(np.rint(raw_prediction[0]))
+    else:
+        prediction_value = int(np.argmax(raw_prediction[0]))
     prediction_label = PREDICTION_MAPPING.get(prediction_value, "Unknown")
 
     today = date.today()

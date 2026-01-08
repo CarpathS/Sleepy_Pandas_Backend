@@ -21,13 +21,13 @@ All routers are mounted under their own prefixes (`/auth`, `/users`, `/predictio
 ### 🔧 Prerequisites
 
 - Python 3.12+
-- PostgreSQL (or the database configured via `DATABASE_URL`)
+- MySQL 8 (or the database configured via `DATABASE_URL`)
 - Poetry or pip for dependency management
 
 Create a `.env` file in the repository root with at least:
 
 ```
-DATABASE_URL=postgresql+psycopg2://user:password@localhost:5432/sleepy_panda
+DATABASE_URL=mysql+pymysql://user:password@localhost:3306/sleepy_panda
 EMAIL_SENDER=your@email.com
 EMAIL_PASSWORD=app-specific-password
 SECRET_KEY=super-secret-key
@@ -44,7 +44,7 @@ uvicorn backend.main:app --reload
 
 Each service can also be mounted in isolation by creating a small launcher that imports the desired router and exposes it via FastAPI.
 
-### � Run with Docker
+### 🚀 Run with Docker
 
 1. Copy the sample environment file and adjust secrets/credentials:
 
@@ -52,13 +52,13 @@ Each service can also be mounted in isolation by creating a small launcher that 
    cp .env.example .env
    ```
 
-2. Start the stack (FastAPI + PostgreSQL + pgAdmin):
+2. Start the stack (FastAPI + MySQL + phpMyAdmin):
 
    ```bash
    docker compose up --build
    ```
 
-   The API will be available at <http://localhost:8000> and pgAdmin at <http://localhost:8080>. Use the credentials defined in `.env` to sign in to pgAdmin, then register a server pointing to host `db`, port `5432`.
+   The API will be available at <http://localhost:8000> and phpMyAdmin at <http://localhost:8080>. Sign in with the database credentials from `.env`; the MySQL host is `db` and the default port is `3306`. Optionally import the schema in `fix db.sql` via phpMyAdmin or the MySQL CLI to seed tables and triggers.
 
 3. To stop the containers, press `Ctrl+C` or run:
 
@@ -66,7 +66,7 @@ Each service can also be mounted in isolation by creating a small launcher that 
    docker compose down
    ```
 
-### �📡 High-level API map
+### 📡 High-level API map
 
 - **Auth**: `/auth/register`, `/auth/login`, `/auth/token`, `/auth/logout`, `/auth/request-otp`, `/auth/verify-otp`, `/auth/reset-password`
 - **Users**: `/users/basic`, `/users/{email}`, `/users/{email}/work`, `/users/{email}` (PATCH), `/users/{email}/metrics`, `/users/me`, `/users/me/profile`

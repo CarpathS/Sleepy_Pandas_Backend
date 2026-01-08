@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from typing import Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -106,17 +106,22 @@ def list_sleep_records(email: str, db: Session = Depends(get_db)):
 @router.get("/weekly/{email}", response_model=SleepStatsResponse)
 def get_weekly_stats(
     email: str,
-    start_date: datetime = Query(..., description="Start date in YYYY-MM-DD format"),
-    end_date: datetime = Query(..., description="End date in YYYY-MM-DD format"),
+    start_date: date = Query(..., description="Start date in YYYY-MM-DD format"),
+    end_date: date = Query(..., description="End date in YYYY-MM-DD format"),
     db: Session = Depends(get_db),
 ):
-    end_date_inclusive = end_date + timedelta(days=2)
+    if start_date > end_date:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="start_date must be before end_date")
+
+    start_dt = datetime.combine(start_date, time.min)
+    end_dt = datetime.combine(end_date, time.max)
+
     sleep_records = (
         db.query(models.SleepRecord)
         .filter(
             models.SleepRecord.email == email,
-            models.SleepRecord.sleep_time >= start_date,
-            models.SleepRecord.wake_time <= end_date_inclusive,
+            models.SleepRecord.sleep_time >= start_dt,
+            models.SleepRecord.wake_time <= end_dt,
         )
         .order_by(models.SleepRecord.sleep_time.desc())
         .all()
