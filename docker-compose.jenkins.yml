@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: jenkins/Dockerfile
     container_name: sleepy_panda_jenkins
+    user: root
     restart: unless-stopped
     ports:
       - "8081:8080"

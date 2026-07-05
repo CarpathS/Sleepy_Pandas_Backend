@@ -39,7 +39,7 @@ pipeline {
                     -v "$PWD":/app \
                     -w /app \
                     ${PYTHON_IMAGE} \
-                    sh -c "python -m pip install --upgrade pip && pip install -r requirements.txt && python -m compileall ."
+                    sh -c "python -m pip install --upgrade pip && pip install -r requirements-ci.txt && python -m compileall ."
                 '''
             }
         }
