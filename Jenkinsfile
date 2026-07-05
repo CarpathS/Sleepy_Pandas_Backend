@@ -36,14 +36,14 @@ pipeline {
                 echo 'Install dependency dan menjalankan test menggunakan Python project...'
                 sh '''
                     docker run --rm \
-                    -v "$PWD":/app \
-                    -w /app \
+                    --volumes-from sleepy_panda_jenkins \
+                    -w "$WORKSPACE" \
                     ${PYTHON_IMAGE} \
-                    sh -c "python -m pip install --upgrade pip && pip install -r requirements-ci.txt && python -m compileall ."
+                    sh -c "ls -la && python -m pip install --upgrade pip && pip install -r requirements-ci.txt && python -m compileall backend"
                 '''
             }
         }
-
+        
         stage('Build Backend Image') {
             steps {
                 echo 'Build Docker image backend...'
