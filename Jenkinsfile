@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_IMAGE = "python:3.12-slim"
+        PYTHON_IMAGE = "sleepy-panda-ci:latest"
         APP_IMAGE = "sleepy-panda-backend:latest"
     }
 
@@ -29,17 +29,17 @@ pipeline {
                     docker run --rm ${PYTHON_IMAGE} python --version
                 '''
             }
-        }
+        }docker system df
 
         stage('Install Dependencies & Test') {
             steps {
-                echo 'Install dependency dan menjalankan test menggunakan Python project...'
+                echo 'Menjalankan test menggunakan CI image...'
                 sh '''
                     docker run --rm \
                     --volumes-from sleepy_panda_jenkins \
                     -w "$WORKSPACE" \
                     ${PYTHON_IMAGE} \
-                    sh -c "ls -la && python -m pip install --upgrade pip && pip install -r requirements-ci.txt && python -m compileall backend"
+                    sh -c "ls -la && python -m compileall backend"
                 '''
             }
         }
