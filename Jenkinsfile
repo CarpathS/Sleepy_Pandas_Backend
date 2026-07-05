@@ -19,6 +19,14 @@ pipeline {
                 echo 'Cek Docker dan Docker Compose...'
                 sh 'docker --version'
                 sh 'docker compose version'
+                sh 'docker system df'
+            }
+        }
+
+        stage('Build CI Image') {
+            steps {
+                echo 'Build Docker image khusus CI...'
+                sh 'docker build -f Dockerfile.ci -t ${PYTHON_IMAGE} .'
             }
         }
 
@@ -29,9 +37,9 @@ pipeline {
                     docker run --rm ${PYTHON_IMAGE} python --version
                 '''
             }
-        }docker system df
+        }
 
-        stage('Install Dependencies & Test') {
+        stage('Run Test') {
             steps {
                 echo 'Menjalankan test menggunakan CI image...'
                 sh '''
@@ -108,6 +116,7 @@ EOF
             steps {
                 echo 'Cek container yang sedang berjalan...'
                 sh 'docker ps'
+                sh 'docker system df'
             }
         }
     }
