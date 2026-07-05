@@ -58,7 +58,7 @@ class Daily(Base):
     __tablename__ = "daily"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, ForeignKey("users.email"), nullable=False)
+    email = Column(String(255), ForeignKey("users.email"), nullable=False)
     date = Column(Date, nullable=False)
     upper_pressure = Column(Integer, nullable=True)
     lower_pressure = Column(Integer, nullable=True)
